@@ -13,11 +13,12 @@ export async function fetchHandler<T = unknown>(
 ): Promise<apiResponse<T>> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const signal = init?.signal || controller.signal;
 
   try {
     const resp = await fetchWithTimeout(input, {
       ...init,
-      signal: controller.signal,
+      signal: signal,
     });
 
     if (!resp.ok) {
