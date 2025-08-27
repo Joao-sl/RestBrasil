@@ -1,18 +1,18 @@
 'use client';
 
 import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
 import { CepResponse } from '@/lib';
+import { useCopyToClipboard } from '@/hooks';
 import { fetchHandler, formatCep } from '@/helpers';
+import { useEffect, useRef, useState } from 'react';
+import { IconMapPin, IconSearch } from '@tabler/icons-react';
 import {
   Button,
   Card,
+  CardContent,
   Input,
   LoadingSpinner,
-  PageHeader,
 } from '@/components/ui';
-import { useCopyToClipboard } from '@/hooks';
-import { IconMapPin, IconSearch } from '@tabler/icons-react';
 
 export function CepLayout() {
   const controllerRef = useRef<AbortController | null>(null);
@@ -60,12 +60,6 @@ export function CepLayout() {
     }
   }
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  }
-
   useEffect(() => {
     return () => {
       controllerRef.current?.abort();
@@ -77,18 +71,12 @@ export function CepLayout() {
     // TODO: Apply styles to the component and improve accessibility
     // TODO: Personalized Tooltip for cards
 
-    <div className='bg-blue-50 dark:bg-transparent min-h-screen'>
-      <div className='container mx-auto px-4 py-8'>
-        <PageHeader
-          title='Consulta CEP'
-          subtitle='Digite um CEP para consultar informações de endereço'
-          centralized
-        />
-
-        <div className='mt-8'>
-          <div className='max-w-2xl mx-auto'>
-            <Card>
-              <div>
+    <>
+      <div className='mt-8'>
+        <div className='max-w-2xl mx-auto'>
+          <Card>
+            <CardContent>
+              <div className='mb-6'>
                 <h3 className='flex items-center gap-1 font-semibold'>
                   <IconMapPin stroke={2} size={20} className='text-green-500' />
                   Buscar CEP
@@ -99,15 +87,14 @@ export function CepLayout() {
               <div className='flex items-center gap-2'>
                 <Input
                   id='cep-search'
-                  ariaLabel='Digite o CEP'
-                  fullWidth
-                  inputSize='md'
                   placeholder='00000000'
                   value={cep}
                   onChange={handleCepChange}
                   maxLength={9}
                   disabled={isPending}
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleSearch();
+                  }}
                   aria-disabled={isPending}
                   aria-label='Digite o CEP'
                 />
@@ -128,28 +115,30 @@ export function CepLayout() {
                   )}
                 </Button>
               </div>
-            </Card>
+            </CardContent>
+          </Card>
 
-            {error && (
-              <div
-                className={clsx(
-                  'font-semibold mt-6 bg-red-50 rounded-lg',
-                  'p-4 border border-red-200 text-red-400',
-                )}
-              >
-                {error}
-              </div>
-            )}
-          </div>
+          {error && (
+            <div
+              className={clsx(
+                'font-semibold mt-6 bg-red-50 rounded-lg',
+                'p-4 border border-red-200 text-red-400',
+              )}
+            >
+              {error}
+            </div>
+          )}
+        </div>
 
-          {data && (
-            <div className='max-w-4xl mx-auto space-y-8'>
-              <div className='text-center mt-6'>
-                <h3>Resultado da Consulta</h3>
-                <p>CEP: {data.cep}</p>
-              </div>
-              <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-8'>
-                <Card>
+        {data && (
+          <div className='max-w-4xl mx-auto space-y-8'>
+            <div className='text-center mt-6'>
+              <h3>Resultado da Consulta</h3>
+              <p>CEP: {data.cep}</p>
+            </div>
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mt-8'>
+              <Card>
+                <CardContent>
                   <h4>🗺️ Endereço</h4>
 
                   <div className='space-y-3'>
@@ -173,9 +162,11 @@ export function CepLayout() {
                       <p>{data.unidade || unavailable}</p>
                     </div>
                   </div>
-                </Card>
+                </CardContent>
+              </Card>
 
-                <Card>
+              <Card>
+                <CardContent>
                   <h4>🌎 Localização</h4>
 
                   <div className='space-y-3'>
@@ -199,9 +190,11 @@ export function CepLayout() {
                       <p>{data.regiao || unavailable}</p>
                     </div>
                   </div>
-                </Card>
+                </CardContent>
+              </Card>
 
-                <Card>
+              <Card>
+                <CardContent>
                   <h4>🔢 Códigos</h4>
 
                   <div className='space-y-3'>
@@ -225,10 +218,12 @@ export function CepLayout() {
                       <p>{data.siafi || unavailable}</p>
                     </div>
                   </div>
-                </Card>
-              </div>
+                </CardContent>
+              </Card>
+            </div>
 
-              <Card>
+            <Card>
+              <CardContent>
                 <div>
                   <div className='flex justify-between'>
                     <h3>Resposta JSON</h3>
@@ -245,21 +240,11 @@ export function CepLayout() {
                 <pre className='text-sm p-4 bg-muted/10 rounded-lg'>
                   {JSON.stringify(data, null, 2)}
                 </pre>
-              </Card>
-            </div>
-          )}
-
-          <div className='mt-8 max-w-4xl mx-auto'>
-            <Card variant='gradient'>
-              <h3>Sobre a API ViaCEP</h3>
-              <p>
-                Webservice gratuito de alto desempenho para consulta de Código
-                de Endereçamento Postal (CEP) do Brasil.
-              </p>
+              </CardContent>
             </Card>
           </div>
-        </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }
