@@ -1,6 +1,6 @@
-export { Button } from './Button';
-export { Input } from './Input';
-export { Card } from './Card';
+export { Button } from './button';
+export { Input } from './input';
+export { Card } from './card';
 export { LoadingSpinner } from './loading-spinner';
 export { ToggleTheme } from './toggle-theme';
 export { PageHeader } from './page-header';
