@@ -1,1 +1,1 @@
-export type { CepResponse } from './cepInterface';
+export type { CepResponse } from './cep-interfaces';

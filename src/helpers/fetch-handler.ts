@@ -3,7 +3,7 @@ import { fetchWithTimeout } from './fetchWithTimeout';
 type apiResponse<T> = {
   data?: T;
   error: string | null;
-  status?: number;
+  status: number;
 };
 
 export async function fetchHandler<T = unknown>(

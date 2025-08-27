@@ -1,3 +1,3 @@
-export { cepMask, formatCep } from './cepHelper';
-export { fetchWithTimeout } from './fetchWithTimeout';
-export { fetchHandler } from './fetchHandler';
+export { cepMask, formatCep } from './cep-helper';
+export { fetchWithTimeout } from './fetch-with-timeout';
+export { fetchHandler } from './fetch-handler';
