@@ -1,21 +1,59 @@
-import * as React from 'react';
+import clsx from 'clsx';
+import { useId } from 'react';
 
-import { cn } from '@/lib/utils';
+type InputProps = React.ComponentPropsWithRef<'input'> & {
+  fullWidth?: boolean;
+  label?: string;
+  inputSize?: 'sm' | 'md' | 'lg';
+  error?: string;
+  ariaLabel: string;
+};
 
-function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
+export function Input({
+  fullWidth,
+  label,
+  inputSize = 'md',
+  error,
+  ariaLabel,
+
+  ...props
+}: InputProps) {
+  // TODO: Apply styles to the component
+
+  const genId = useId();
+  const id = props.id ?? genId;
+
+  const inputSizeMap = {
+    sm: 'text-sm h-8',
+    md: 'text-md h-9',
+    lg: 'text-lg h-10',
+  };
+
   return (
-    <input
-      type={type}
-      data-slot='input'
-      className={cn(
-        'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-[38px] w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-        'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-        'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-        className,
+    <div className={clsx('flex flex-col', fullWidth ? 'w-full' : undefined)}>
+      {label && (
+        <label htmlFor={id} className='text-sm font-semibold mb-1'>
+          {label}
+        </label>
       )}
-      {...props}
-    />
+
+      <input
+        {...props}
+        id={id}
+        aria-describedby={`error-${id}`}
+        aria-label={ariaLabel}
+        className={clsx(
+          inputSizeMap[inputSize],
+          'px-3 py-1 rounded-lg border border-muted/50',
+          'transition duration-400 focus-visible:ring-2 outline-none',
+          'disabled:bg-muted disabled:border-transparent',
+        )}
+      />
+      {error && (
+        <p id={`error-${id}`} className='text-sm text-red-500' role='alert'>
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
-
-export { Input };
