@@ -1,4 +1,4 @@
-import { fetchWithTimeout } from './fetchWithTimeout';
+import { fetchWithTimeout } from './fetch-with-timeout';
 
 type apiResponse<T> = {
   data?: T;
