@@ -22,11 +22,17 @@ export async function fetchHandler<T = unknown>(
     });
 
     if (!resp.ok) {
-      let errorBody = await resp.json().catch(() => null);
-      if (errorBody) errorBody = Object.values(errorBody).join(', ');
+      const errorBody = await resp.json().catch(() => null);
+      let message = null;
+
+      if (errorBody) {
+        message = Object.values(errorBody).join(', ');
+      } else {
+        message = `HTTP ${resp.status}`;
+      }
 
       return {
-        error: errorBody,
+        error: message,
         status: resp.status,
       };
     }
