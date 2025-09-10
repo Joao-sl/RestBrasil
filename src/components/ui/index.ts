@@ -29,3 +29,13 @@ export { InputSelect } from './input-select';
 export { LoadingSpinner } from './loading-spinner';
 export { ToggleTheme } from './toggle-theme';
 export { PageHeader } from './page-header';
+export {
+  DashboardCard,
+  DashboardCardHeader,
+  DashboardCardTitle,
+  DashboardCardDescription,
+  DashboardCardAction,
+  DashboardCardContent,
+  DashboardCardFooter,
+  DashboardCardDl,
+} from './dashboard-card';
