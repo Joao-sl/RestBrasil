@@ -296,12 +296,10 @@ export function NomesLayout({ states }: NomesLayoutProps) {
               {Array.isArray(basicCardItems) ? (
                 basicCardItems.map((item, idx) => {
                   return (
-                    <>
-                      <DashboardCardDl
-                        key={idx}
-                        fields={item.fields}
-                      ></DashboardCardDl>
-                    </>
+                    <DashboardCardDl
+                      key={idx}
+                      fields={item.fields}
+                    ></DashboardCardDl>
                   );
                 })
               ) : (
