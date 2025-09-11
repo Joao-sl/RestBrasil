@@ -7,7 +7,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import type {
   NameBasic,
   NameMap,
-  NameRaking,
+  NameRanking,
   NameRange,
   NameUnion,
   StateData,
@@ -16,18 +16,27 @@ import {
   Button,
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  DashboardCard,
+  DashboardCardContent,
+  DashboardCardDescription,
+  DashboardCardDl,
+  DashboardCardHeader,
+  DashboardCardTitle,
   Input,
   InputSelect,
   InputWrapper,
   Label,
   LoadingSpinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui';
 
 type NomesLayoutProps = {
@@ -46,7 +55,7 @@ export function NomesLayout({ states }: NomesLayoutProps) {
   const [dataBasic, setDataBasic] = useState<NameBasic[] | string>('');
   const [dataMap, setDataMap] = useState<NameMap[] | string>('');
   const [dataRange, setDataRange] = useState<NameRange[] | string>('');
-  const [dataRanking, setDataRanking] = useState<NameRaking[] | string>('');
+  const [dataRanking, setDataRanking] = useState<NameRanking[] | string>('');
 
   const sexOptions = [
     { value: ' ', label: 'Ambos' },
@@ -120,11 +129,70 @@ export function NomesLayout({ states }: NomesLayoutProps) {
     },
   } satisfies ChartConfig;
 
-  const titleClasses = 'text-2xl font-semibold mb-4';
   const errorClasses = 'text-red-500 font-semibold';
+  const rankingSliced = [
+    dataRanking.slice(0, dataRanking.length / 2),
+    dataRanking.slice(dataRanking.length / 2),
+  ];
+
+  const basicCardItems = Array.isArray(dataBasic)
+    ? [
+        {
+          fields: [
+            {
+              contentLabel: 'Ranking',
+              content: `${dataBasic[0].rank}°`,
+            },
+            {
+              contentLabel: 'Quantidade',
+              content: `${dataBasic[0].freq.toLocaleString('pt-BR')} Pessoas`,
+            },
+            {
+              contentLabel: 'Porcentagem',
+              content: `${
+                dataBasic[0].percentual.toFixed(2) === '0.00'
+                  ? '0.01'
+                  : dataBasic[0].percentual.toFixed(2)
+              }%`,
+            },
+          ],
+        },
+        {
+          fields: [
+            {
+              contentLabel: 'Maior taxa por 100.000 pessoas',
+              content: dataBasic[0].ufMax,
+            },
+            { contentLabel: 'Taxa', content: dataBasic[0]?.ufMaxProp },
+            {
+              contentLabel: 'Nomes semelhantes',
+              content: (
+                <div>
+                  {dataBasic[0].nomes.split(',').map((name, idx) => {
+                    return (
+                      <Button
+                        onClick={() => {
+                          setName(name);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                          window.document.getElementById('nome')?.focus();
+                        }}
+                        variant={'link'}
+                        key={idx}
+                      >
+                        {name}
+                      </Button>
+                    );
+                  })}
+                </div>
+              ),
+            },
+          ],
+        },
+      ]
+    : 'Erro ao recuperar dados';
 
   return (
-    <>
+    <div className='space-y-6'>
       <Card>
         <CardContent>
           <div className='grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-6'>
@@ -196,12 +264,12 @@ export function NomesLayout({ states }: NomesLayoutProps) {
 
       {noDataError && (
         <div>
-          <h3
+          <span
             role='alert'
-            className='mt-4 p-6 bg-red-400 rounded-md text-white font-semibold'
+            className='mt-4 p-6 w-full bg-red-400 rounded-md text-white font-semibold'
           >
             {noDataError}
-          </h3>
+          </span>
         </div>
       )}
 
@@ -211,83 +279,52 @@ export function NomesLayout({ states }: NomesLayoutProps) {
         </div>
       )}
 
-      <div className='grid grid-cols-1 lg:grid-cols-[30vw_auto] gap-8 mt-8'>
+      <section
+        id='basic-info-and-chart'
+        className='grid grid-cols-1 lg:grid-cols-[30vw_auto] gap-8 mt-8'
+      >
         {dataBasic && (
-          <Card>
-            <CardContent>
-              <h3 className={titleClasses}>Infos</h3>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardTitle>Infos</DashboardCardTitle>
+              <DashboardCardDescription>
+                Informações básicas de acordos com a pesquisa
+              </DashboardCardDescription>
+            </DashboardCardHeader>
 
-              {(Array.isArray(dataBasic) && (
-                <div>
-                  <div className='flex justify-between'>
-                    <span>Ranking</span>
-                    <span>
-                      {dataBasic[0].rank
-                        ? `${dataBasic[0].rank}°`
-                        : 'Não ranqueado'}
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>Quantidade</span>
-                    <span>
-                      {dataBasic[0]?.freq.toLocaleString('pt-BR')} Pessoas
-                    </span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>Porcentagem</span>
-                    <span>{dataBasic[0].percentual.toFixed(2)}%</span>
-                  </div>
-
-                  <h3 className='mt-4 font-semibold'>
-                    Maior taxa (100 mil pessoas)
-                  </h3>
-                  <div className='flex justify-between'>
-                    <span>Estado</span>
-                    <span>{dataBasic[0]?.ufMax}</span>
-                  </div>
-                  <div className='flex justify-between'>
-                    <span>Taxa</span>
-                    <span>{Number(dataBasic[0]?.ufMaxProp).toFixed(2)}</span>
-                  </div>
-
-                  <h3 className='font-semibold mt-6'>Nomes semelhantes</h3>
-                  {dataBasic[0]?.nomes.split(',').map((v, i) => {
-                    return (
-                      <Button
-                        onClick={() => {
-                          setName(v);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                          window.document.getElementById('nome')?.focus();
-                        }}
-                        variant={'link'}
-                        key={i}
-                      >
-                        {v}
-                      </Button>
-                    );
-                  })}
-                </div>
-              )) || <p className={errorClasses}>{dataBasic.toString()}</p>}
-            </CardContent>
-          </Card>
+            <DashboardCardContent className='space-y-6'>
+              {Array.isArray(basicCardItems) ? (
+                basicCardItems.map((item, idx) => {
+                  return (
+                    <>
+                      <DashboardCardDl
+                        key={idx}
+                        fields={item.fields}
+                      ></DashboardCardDl>
+                    </>
+                  );
+                })
+              ) : (
+                <p className={errorClasses}>{basicCardItems}</p>
+              )}
+            </DashboardCardContent>
+          </DashboardCard>
         )}
 
         {(dataRange && (
-          <Card>
-            <CardHeader>
-              <CardTitle>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardTitle>
                 {Array.isArray(dataBasic) ? dataBasic[0].nome : 'Gráfico'}
-              </CardTitle>
-              <CardDescription>
+              </DashboardCardTitle>
+              <DashboardCardDescription>
                 Gráfico de nascimentos a cada década
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </DashboardCardDescription>
+            </DashboardCardHeader>
+
+            <DashboardCardContent>
               {Array.isArray(dataRange) && (
-                <ChartContainer
-                  config={chartConfig}
-                  className='min-h-[400px] w-full'
-                >
+                <ChartContainer config={chartConfig} className='w-full'>
                   <BarChart accessibilityLayer data={dataRange}>
                     <CartesianGrid vertical={false} />
                     <YAxis
@@ -307,113 +344,137 @@ export function NomesLayout({ states }: NomesLayoutProps) {
                   </BarChart>
                 </ChartContainer>
               )}
-            </CardContent>
-          </Card>
+            </DashboardCardContent>
+          </DashboardCard>
         )) || <p className={errorClasses}>{dataRange.toString()}</p>}
+      </section>
 
-        {dataMap && (
-          <Card className='lg:col-span-2'>
-            <CardContent>
-              <h3 className={titleClasses}>Tabela Por Estado</h3>
+      {dataMap && (
+        <section id='table-by-state'>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardTitle>Tabela Por Estado</DashboardCardTitle>
+              <DashboardCardDescription>
+                Tabela com estado, população, quantidade pessoas com o nome
+                pesquisado e a taxa a cada 100 mil pessoas
+              </DashboardCardDescription>
+            </DashboardCardHeader>
 
-              {(Array.isArray(dataMap) && (
-                <div className='rounded-lg max-h-120 sm:max-h-[600px] overflow-auto font-medium'>
-                  <table className='min-w-full sm:w-full sm:table-fixed'>
-                    <thead className='bg-primary sticky top-0 z-10 text-gray-100'>
-                      <tr>
-                        <th scope='col' className='text-left px-4 py-4'>
-                          Estado
-                        </th>
-                        <th scope='col' className='text-right px-4 py-4'>
-                          População
-                        </th>
-                        <th scope='col' className='text-right px-4 py-4'>
-                          Quantidade
-                        </th>
-                        <th
-                          scope='col'
-                          className='text-right px-4 py-4 min-w-36'
+            <DashboardCardContent className='h-120 overflow-auto'>
+              {Array.isArray(dataMap) ? (
+                <Table className='rounded-t-md overflow-hidden'>
+                  <TableHeader className='bg-primary'>
+                    <TableRow className='border-muted hover:bg-transparent'>
+                      <TableHead className='text-white'>Estado</TableHead>
+                      <TableHead className='text-right text-white'>
+                        População
+                      </TableHead>
+                      <TableHead className='text-right text-white'>
+                        Quantidade
+                      </TableHead>
+                      <TableHead className='text-right text-white'>
+                        A cada 100 mil
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {dataMap.map((item, idx) => {
+                      return (
+                        <TableRow
+                          key={idx}
+                          className='font-medium border-muted'
                         >
-                          A cada 100 mil
-                        </th>
-                      </tr>
-                    </thead>
+                          <TableCell className='py-3 min-w-40'>
+                            {item.nome}
+                          </TableCell>
+                          <TableCell className='text-right py-3 min-w-35'>
+                            {item.populacao.toLocaleString('pt-BR')}
+                          </TableCell>
+                          <TableCell className='text-right py-3 min-w-35'>
+                            {item.freq.toLocaleString('pt-BR')}
+                          </TableCell>
+                          <TableCell className='text-right py-3 min-w-35'>
+                            {item.prop.toLocaleString('pt-BR')}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className={errorClasses}>{dataMap.toString()}</p>
+              )}
+            </DashboardCardContent>
+          </DashboardCard>
+        </section>
+      )}
 
-                    <tbody className='text-sm'>
-                      {dataMap.map((v, i) => {
-                        return (
-                          <tr
-                            className={clsx(
-                              'hover:bg-muted border-b',
-                              'border-muted text-gray-600 dark:text-white/80',
-                            )}
-                            key={i}
-                          >
-                            <td className='px-4 py-3.5 min-w-42'>{v.nome}</td>
-                            <td className='text-right px-4 py-3'>
-                              {v.populacao}
-                            </td>
-                            <td className='text-right px-4 py-3'>{v.freq}</td>
-                            <td className='text-right px-4 py-3'>{v.prop}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )) || <p className={errorClasses}>{dataMap.toString()}</p>}
-            </CardContent>
-          </Card>
-        )}
+      {dataRanking && (
+        <section id='ranking-by-search-params'>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardTitle>Ranking</DashboardCardTitle>
+              <DashboardCardDescription>
+                Esse ranking é baseado nos parâmetros da pesquisa.
+              </DashboardCardDescription>
+            </DashboardCardHeader>
 
-        {dataRanking && (
-          <Card className='lg:col-span-2'>
-            <CardContent>
-              <h3 className={titleClasses}>
-                Ranking baseado nos parâmetros da pesquisa
-              </h3>
-
-              {(Array.isArray(dataRanking) && (
+            <DashboardCardContent>
+              {Array.isArray(dataRanking) &&
+              rankingSliced.every(array => Array.isArray(array)) ? (
                 <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6'>
-                  <div>
-                    <div className='flex justify-between bg-primary p-2 font-bold rounded-t-md'>
-                      <span>Nome</span>
-                      <span>Ranking</span>
-                    </div>
-                    {dataRanking
-                      .slice(0, dataRanking.length / 2)
-                      .map((v, i) => (
-                        <div
-                          key={i}
-                          className='flex justify-between p-2 border-b hover:bg-muted'
-                        >
-                          <p>{v.rank}°</p>
-                          <p className='text-muted-foreground'>{v.nome}</p>
-                        </div>
-                      ))}
-                  </div>
+                  {rankingSliced.map((item, idx) => {
+                    return (
+                      <Table key={idx} className='rounded-t-md overflow-hidden'>
+                        <TableHeader className='bg-primary'>
+                          <TableRow
+                            className={clsx(
+                              idx === 1 ? 'hidden sm:table-row' : '',
+                              'border-muted hover:bg-transparent',
+                            )}
+                          >
+                            <TableHead className='text-white'>
+                              Ranking
+                            </TableHead>
+                            <TableHead className='text-white text-right'>
+                              Nome
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
 
-                  <div>
-                    <div className='hidden md:flex justify-between bg-primary p-2 font-bold rounded-t-md '>
-                      <span>Nome</span>
-                      <span>Ranking</span>
-                    </div>
-                    {dataRanking.slice(dataRanking.length / 2).map((v, i) => (
-                      <div
-                        key={i}
-                        className='flex justify-between p-2 border-b hover:bg-muted'
-                      >
-                        <p>{v.rank}°</p>
-                        <p className='text-muted-foreground'>{v.nome}</p>
-                      </div>
-                    ))}
-                  </div>
+                        <TableBody
+                          className={clsx(
+                            idx === 0
+                              ? '[&_tr:last-child]:border-b-1 sm:[&_tr:last-child]:border-b-0'
+                              : '',
+                          )}
+                        >
+                          {item.map((data, i) => {
+                            return (
+                              <TableRow
+                                key={i}
+                                className='border-muted font-medium'
+                              >
+                                <TableCell>{data.rank}°</TableCell>
+                                <TableCell className='text-right text-muted-foreground py-2.5'>
+                                  {data.nome}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    );
+                  })}
                 </div>
-              )) || <p>{dataRanking.toString()}</p>}
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    </>
+              ) : (
+                <p className={errorClasses}>{dataRanking.toString()}</p>
+              )}
+            </DashboardCardContent>
+          </DashboardCard>
+        </section>
+      )}
+    </div>
   );
 }

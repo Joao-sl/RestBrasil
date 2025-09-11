@@ -29,7 +29,7 @@ export interface NameRange {
   faixa: string;
 }
 
-export interface NameRaking {
+export interface NameRanking {
   nome: string;
   regiao: number;
   freq: number;
@@ -41,5 +41,5 @@ export interface NameUnion {
   dataBasic: NameBasic[];
   dataMap: NameMap[];
   dataRange: NameRange[];
-  dataRanking: NameRaking[];
+  dataRanking: NameRanking[];
 }

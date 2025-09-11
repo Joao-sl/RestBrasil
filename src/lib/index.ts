@@ -4,7 +4,7 @@ export type { CountryRaw, CountryMapped } from './country-interfaces';
 export type {
   NameBasic,
   NameMap,
-  NameRaking,
+  NameRanking,
   NameRange,
   NameUnion,
 } from './name-interfaces';
