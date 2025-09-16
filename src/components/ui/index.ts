@@ -11,8 +11,9 @@ export * from './table';
 
 // my
 export { InputWrapper } from './input-wrapper';
-export { InputSelect } from './input-select';
+export { InputSelect } from './hero-select';
 export { LoadingSpinner } from './loading-spinner';
 export { ToggleTheme } from './toggle-theme';
 export { PageHeader } from './page-header';
 export * from './dashboard-card';
+export * from './hero';
