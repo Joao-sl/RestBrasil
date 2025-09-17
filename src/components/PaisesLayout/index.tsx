@@ -1,6 +1,5 @@
 'use client';
 
-import clsx from 'clsx';
 import Image from 'next/image';
 import { useState } from 'react';
 import { CountryMapped, CountryRaw } from '@/lib';
@@ -11,19 +10,21 @@ import {
   IconGlobe,
   IconMessage2,
   IconNotes,
+  IconSearch,
 } from '@tabler/icons-react';
 import {
-  Button,
-  Card,
-  CardContent,
   DashboardCard,
   DashboardCardContent,
   DashboardCardDl,
   DashboardCardHeader,
   DashboardCardTitle,
-  Input,
-  InputWrapper,
-  Label,
+  HeroButton,
+  HeroCard,
+  HeroCardContent,
+  HeroCardDescription,
+  HeroCardHeader,
+  HeroCardTitle,
+  HeroInput,
   LoadingSpinner,
 } from '@/components/ui/';
 
@@ -198,57 +199,53 @@ export function PaisesLayout() {
   ];
 
   return (
-    <div className='space-y-6'>
-      <Card className='max-w-2xl mx-auto mt-6'>
-        <CardContent className='space-y-4'>
-          <InputWrapper>
-            <Label htmlFor='country'>Pesquise o país</Label>
-            <Input
-              id='country'
-              name='country'
-              value={country}
-              placeholder='Digite o nome do país'
-              onChange={e => setCountry(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleSearch();
-              }}
-              disabled={isPending}
-              autoComplete='off'
-              aria-describedby='form-error'
-              aria-invalid={!!formError}
-              aria-disabled={isPending}
-            />
-            {formError && (
-              <span
-                id='form-error'
-                role='alert'
-                className='text-sm text-red-500'
-              >
-                {formError}
-              </span>
-            )}
-          </InputWrapper>
-          <Button
+    <>
+      <HeroCard>
+        <HeroCardHeader>
+          <HeroCardTitle>Pesquise qualquer país</HeroCardTitle>
+          <HeroCardDescription>
+            Digite o país em português, inglês ou idioma nativo
+          </HeroCardDescription>
+        </HeroCardHeader>
+
+        <HeroCardContent>
+          <HeroInput
+            icon={<IconSearch />}
+            id='country'
+            name='country'
+            value={country}
+            placeholder='Digite o nome do país'
+            onChange={e => setCountry(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleSearch();
+            }}
+            disabled={isPending}
+            autoComplete='off'
+            aria-describedby='form-error'
+            aria-invalid={!!formError || !!fetchError}
+            aria-disabled={isPending}
+          />
+          <HeroButton
             onClick={handleSearch}
             disabled={isPending}
             aria-disabled={isPending}
-            className='min-w-20'
+            className='min-w-24'
           >
-            {isPending ? <LoadingSpinner color='white' /> : 'Buscar'}
-          </Button>
-        </CardContent>
-      </Card>
+            {isPending ? <LoadingSpinner color='white' /> : <IconSearch />}
+            {isPending ? '' : 'Buscar'}
+          </HeroButton>
+        </HeroCardContent>
 
-      {fetchError && (
-        <div
-          className={clsx(
-            'font-semibold mt-6 bg-red-50 rounded-lg max-w-2xl mx-auto',
-            'p-4 border border-red-200 text-red-400',
-          )}
-        >
-          {fetchError}
-        </div>
-      )}
+        {(formError || fetchError) && (
+          <span
+            id='form-error'
+            role='alert'
+            className='text-sm text-red-500 text-left w-full font-medium'
+          >
+            {formError || fetchError}
+          </span>
+        )}
+      </HeroCard>
 
       {countryData && (
         <>
@@ -311,6 +308,6 @@ export function PaisesLayout() {
           </p>
         </>
       )}
-    </div>
+    </>
   );
 }
