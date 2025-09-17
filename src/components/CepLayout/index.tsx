@@ -1,19 +1,17 @@
 'use client';
 
-import clsx from 'clsx';
 import { CepResponse } from '@/lib';
 import { useCopyToClipboard } from '@/hooks';
 import { fetchHandler, formatCep } from '@/helpers';
 import { useEffect, useRef, useState } from 'react';
 import {
+  IconSearch,
   IconMapPinFilled,
   IconMessageFilled,
   IconSignRightFilled,
 } from '@tabler/icons-react';
 import {
   Button,
-  Card,
-  CardContent,
   DashboardCard,
   DashboardCardAction,
   DashboardCardContent,
@@ -21,9 +19,13 @@ import {
   DashboardCardDl,
   DashboardCardHeader,
   DashboardCardTitle,
-  Input,
-  InputWrapper,
-  Label,
+  HeroButton,
+  HeroCard,
+  HeroCardContent,
+  HeroCardDescription,
+  HeroCardHeader,
+  HeroCardTitle,
+  HeroInput,
   LoadingSpinner,
 } from '@/components/ui';
 
@@ -149,54 +151,56 @@ export function CepLayout() {
   ];
 
   return (
-    <div className='space-y-6'>
-      <Card className='max-w-2xl mx-auto mt-6'>
-        <CardContent className='space-y-4'>
-          <InputWrapper>
-            <Label htmlFor='cep-search'>Buscar CEP</Label>
-            <Input
-              id='cep-search'
-              placeholder='Digite o CEP'
-              value={cep}
-              onChange={handleCepChange}
-              maxLength={9}
-              disabled={isPending}
-              onKeyDown={e => {
-                if (e.key === 'Enter') handleSearch();
-              }}
-              aria-disabled={isPending}
-              aria-describedby='search-error'
-              aria-invalid={!!error}
-            />
-          </InputWrapper>
+    <>
+      <HeroCard>
+        <HeroCardHeader>
+          <HeroCardTitle>Buscar por um CEP</HeroCardTitle>
+          <HeroCardDescription>
+            Digite apenas os números do CEP sem hífen (ex: 01001000)
+          </HeroCardDescription>
+        </HeroCardHeader>
 
-          <Button
+        <HeroCardContent>
+          <HeroInput
+            id='cep-search'
+            placeholder='Digite o CEP'
+            icon={<IconSearch />}
+            value={cep}
+            onChange={handleCepChange}
+            maxLength={9}
+            disabled={isPending}
+            onKeyDown={e => {
+              if (e.key === 'Enter') handleSearch();
+            }}
+            aria-disabled={isPending}
+            aria-describedby='search-error'
+            aria-invalid={!!error}
+          />
+          <HeroButton
             onClick={handleSearch}
             disabled={isPending}
             aria-disabled={isPending}
-            className='min-w-20'
+            className='min-w-24'
           >
-            {isPending ? <LoadingSpinner color='white' /> : 'Buscar'}
-          </Button>
-        </CardContent>
-      </Card>
+            {isPending ? <LoadingSpinner color='white' /> : <IconSearch />}
+            {isPending ? '' : 'Buscar'}
+          </HeroButton>
+        </HeroCardContent>
 
-      {error && (
-        <div
-          id='search-error'
-          role='alert'
-          className={clsx(
-            'font-semibold mt-6 bg-red-50 rounded-lg max-w-4xl mx-auto',
-            'p-4 border border-red-200 text-red-400',
-          )}
-        >
-          {error}
-        </div>
-      )}
+        {error && (
+          <span
+            id='search-error'
+            role='alert'
+            className='w-full text-left text-red-500 font-medium text-sm'
+          >
+            {error}
+          </span>
+        )}
+      </HeroCard>
 
       {data && (
-        <div className='max-w-4xl mx-auto space-y-8'>
-          <div className='text-center mt-6'>
+        <>
+          <div className='text-center'>
             <h3>Resultado da Consulta</h3>
             <p>CEP: {data.cep}</p>
           </div>
@@ -237,8 +241,8 @@ export function CepLayout() {
               </pre>
             </DashboardCardContent>
           </DashboardCard>
-        </div>
+        </>
       )}
-    </div>
+    </>
   );
 }

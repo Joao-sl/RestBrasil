@@ -1,6 +1,16 @@
 import { CepLayout } from '@/components';
-import { Card, PageHeader } from '@/components/ui';
-import { CardContent } from '@/components/ui/card';
+import {
+  Card,
+  Hero,
+  HeroBadge,
+  HeroBanner,
+  HeroDescription,
+  HeroHeader,
+  HeroOverlay,
+  HeroTitle,
+} from '@/components/ui';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { IconMapPin } from '@tabler/icons-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -11,28 +21,43 @@ export const metadata: Metadata = {
 
 export default function Cep() {
   return (
-    <div className='page-wrapper'>
-      <div className='page-content'>
-        <PageHeader
-          title='Consulta CEP'
-          subtitle='Digite um CEP para consultar informações de endereço'
-          centralized
-        />
+    <>
+      <Hero>
+        <HeroBanner src={'/images/city.png'} alt='' />
+        <HeroOverlay className='bg-gradient-to-r from-blue-900 via-purple-900 to-violet-900 opacity-80' />
+        <HeroBadge>
+          <IconMapPin /> Dados do ViaCEP
+        </HeroBadge>
 
-        <CepLayout />
+        <HeroHeader>
+          <HeroTitle>
+            Consultar{' '}
+            <span className='bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent'>
+              CEPs
+            </span>{' '}
+            do Brasil
+          </HeroTitle>
 
-        <div className='mt-8 max-w-4xl mx-auto'>
-          <Card>
-            <CardContent>
-              <h3>Sobre a API ViaCEP</h3>
-              <p>
-                Webservice gratuito de alto desempenho para consulta de Código
-                de Endereçamento Postal (CEP) do Brasil.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+          <HeroDescription>
+            Encontre informações completas de endereço através do Código de
+            Endereçamento Postal brasileiro
+          </HeroDescription>
+        </HeroHeader>
+      </Hero>
+
+      <CepLayout />
+
+      <Card className='gap-2 max-w-4xl mx-auto mt-8'>
+        <CardHeader>
+          <CardTitle>Sobre</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            Webservice gratuito de alto desempenho para consulta de Código de
+            Endereçamento Postal (CEP) do Brasil.
+          </p>
+        </CardContent>
+      </Card>
+    </>
   );
 }
