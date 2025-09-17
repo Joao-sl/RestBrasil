@@ -23,6 +23,7 @@ function HeroBanner({ className, ...props }: ImageProps) {
       src={props.src}
       alt={props.alt}
       fill
+      sizes='100vw'
       priority
       className={cn('object-cover', className)}
     ></Image>
