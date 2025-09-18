@@ -13,9 +13,13 @@ import type {
   StateData,
 } from '@/lib';
 import {
+  IconGlobe,
+  IconSearch,
+  IconTarget,
+  IconUser,
+} from '@tabler/icons-react';
+import {
   Button,
-  Card,
-  CardContent,
   ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -26,7 +30,13 @@ import {
   DashboardCardDl,
   DashboardCardHeader,
   DashboardCardTitle,
-  Input,
+  HeroButton,
+  HeroCard,
+  HeroCardContent,
+  HeroCardDescription,
+  HeroCardHeader,
+  HeroCardTitle,
+  HeroInput,
   InputSelect,
   InputWrapper,
   Label,
@@ -192,86 +202,91 @@ export function NomesLayout({ states }: NomesLayoutProps) {
     : 'Erro ao recuperar dados';
 
   return (
-    <div className='space-y-6'>
-      <Card>
-        <CardContent>
-          <div className='grid sm:grid-cols-[1fr_1fr_1fr_auto] gap-6'>
-            <InputWrapper>
-              <Label htmlFor='nome'>Nome</Label>
-              <Input
-                id='nome'
-                value={name}
-                onChange={e => setName(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleSearch();
-                }}
-                disabled={isPending}
-                aria-disabled={isPending}
-              ></Input>
-            </InputWrapper>
+    <>
+      <HeroCard className='overflow-visible'>
+        <HeroCardHeader>
+          <HeroCardTitle>Pesquise um nome</HeroCardTitle>
+          <HeroCardDescription>
+            Não é necessário colocar acentuação nos nomes
+          </HeroCardDescription>
+        </HeroCardHeader>
 
-            <InputWrapper>
-              <Label htmlFor='sex'>Sexo</Label>
-              <InputSelect
-                inputId='sex'
-                name='sex'
-                options={sexOptions}
-                defaultValue={sexOptions[0]}
-                isSearchable={false}
-                aria-label='Opções de sexo'
-                onChange={option => setSex((option as { value: string }).value)}
-                isDisabled={isPending}
-              />
-            </InputWrapper>
+        <HeroCardContent className='grid gap-6 sm:gap-2 sm:grid-cols-[1fr_1fr_1fr_auto]'>
+          <InputWrapper>
+            <Label htmlFor='name' className=''>
+              <IconUser size={20} color='oklch(48.8% 0.243 264.376)' />
+              Nome
+            </Label>
 
-            <InputWrapper>
-              <Label htmlFor='states'>Localidade</Label>
-              <InputSelect
-                inputId='states'
-                name='states'
-                options={stateOptions}
-                defaultValue={stateOptions[0]}
-                aria-label='As opções são os estados brasileiros ou Brasil.'
-                noOptionsMessage={() => 'Estado não encontrado'}
-                onChange={option =>
-                  setState((option as { value: string }).value)
-                }
-                isDisabled={isPending}
-              />
-            </InputWrapper>
+            <HeroInput
+              id='name'
+              value={name}
+              icon={<IconSearch />}
+              onChange={e => setName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') handleSearch();
+              }}
+              disabled={isPending}
+              autoComplete='on'
+              aria-disabled={isPending}
+              aria-invalid={!!noDataError || formErrors.length > 0}
+            />
+          </InputWrapper>
 
-            <div className='flex items-baseline-last'>
-              <Button
-                id='search'
-                name='search'
-                disabled={isPending}
-                onClick={handleSearch}
-              >
-                <span className='flex justify-center w-12'>
-                  {isPending ? <LoadingSpinner color='white' /> : 'Buscar'}
-                </span>
-              </Button>
-            </div>
-          </div>
+          <InputWrapper>
+            <Label htmlFor='sex'>
+              <IconTarget size={20} color='oklch(62.7% 0.265 303.9)' /> Gênero
+            </Label>
+            <InputSelect
+              inputId='sex'
+              name='sex'
+              options={sexOptions}
+              defaultValue={sexOptions[0]}
+              isSearchable={false}
+              aria-label='Opções de sexo'
+              onChange={option => setSex((option as { value: string }).value)}
+              isDisabled={isPending}
+            />
+          </InputWrapper>
 
-          {formErrors.length > 0 && (
-            <div id='error' role='alert'>
-              <span className='text-red-600'>{formErrors}</span>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          <InputWrapper>
+            <Label htmlFor='states'>
+              <IconGlobe size={20} color='oklch(72.3% 0.219 149.579)' /> Estado
+            </Label>
+            <InputSelect
+              inputId='states'
+              name='states'
+              options={stateOptions}
+              defaultValue={stateOptions[0]}
+              aria-label='Estado especifico ou todo o brasil'
+              noOptionsMessage={() => 'Estado não encontrado'}
+              onChange={option => setState((option as { value: string }).value)}
+              isDisabled={isPending}
+            />
+          </InputWrapper>
 
-      {noDataError && (
-        <div>
-          <span
-            role='alert'
-            className='mt-4 p-6 w-full bg-red-400 rounded-md text-white font-semibold'
+          <HeroButton
+            id='search'
+            name='search'
+            disabled={isPending}
+            onClick={handleSearch}
+            className='min-w-24 self-end'
           >
-            {noDataError}
+            {isPending ? <LoadingSpinner color='white' /> : <IconSearch />}
+            {isPending ? '' : 'Buscar'}
+          </HeroButton>
+        </HeroCardContent>
+
+        {(formErrors.length > 0 || noDataError) && (
+          <span
+            id='error'
+            role='alert'
+            className='w-full text-left text-sm font-medium text-red-500'
+          >
+            {formErrors.length > 0 ? formErrors : noDataError}
           </span>
-        </div>
-      )}
+        )}
+      </HeroCard>
 
       {isPending && (
         <div className='flex items-center justify-center'>
@@ -473,6 +488,6 @@ export function NomesLayout({ states }: NomesLayoutProps) {
           </DashboardCard>
         </section>
       )}
-    </div>
+    </>
   );
 }
