@@ -219,7 +219,7 @@ export function CepLayout() {
             <h3 id='result' aria-live='polite' className='sr-only'>
               Resultado da consulta {data.cep}
             </h3>
-            <p className='text-center text-5xl font-bold mb-2'>{data.cep}</p>
+            <h3 className='text-center text-5xl font-bold mb-2'>{data.cep}</h3>
             <p className='text-xl text-muted-foreground text-center'>
               {data.logradouro}, {data.estado} - {data.uf}
             </p>
