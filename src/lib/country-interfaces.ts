@@ -69,6 +69,8 @@ export interface CountryMapped {
   names: {
     common: string | undefined;
     official: string | undefined;
+    commonNamePtBr: string | undefined;
+    officialNamePtBr: string | undefined;
     native:
       | {
           language: string | undefined;

@@ -20,6 +20,8 @@ export function mapCountry(data: CountryRaw): CountryMapped {
     names: {
       common: data.name?.common,
       official: data.name?.official,
+      commonNamePtBr: data.translations?.['por']?.common,
+      officialNamePtBr: data.translations?.['por']?.official,
       native: data.name?.nativeName
         ? Object.entries(data.name.nativeName).map(([key, value]) => {
             return {

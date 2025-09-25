@@ -21,7 +21,7 @@ type DashboardFeaturedProps = {
   item: {
     icon?: React.ReactNode;
     label?: string;
-    value?: string;
+    value?: string | React.ReactNode;
   };
   className?: string;
 };
@@ -103,8 +103,9 @@ function DashboardCardDl({
             <div
               key={i}
               className={cn(
-                'flex items-center justify-between border p-3 rounded-lg text-sm',
+                'flex items-center justify-between gap-2 border p-3 rounded-lg text-sm',
                 'border-slate-200 dark:border-input bg-white dark:bg-card',
+                Array.isArray(v.content) ? 'flex-col gap-1 items-baseline' : '',
                 className,
               )}
             >
@@ -113,9 +114,9 @@ function DashboardCardDl({
               </dt>
 
               {Array.isArray(v.content) ? (
-                v.content.map((item, idx) => {
-                  return <dd key={idx}>{item}</dd>;
-                })
+                <dl className='flex flex-col max-h-44 overflow-auto w-full'>
+                  {v.content.map(item => item)}
+                </dl>
               ) : (
                 <dd
                   className={cn(
@@ -152,14 +153,14 @@ function DashboardCardItem({
   return (
     <div
       className={cn(
-        className,
-        'flex flex-col items-center gap-0.5 py-3',
+        'flex flex-col items-center gap-0.5 px-0.5 py-3',
         'w-full rounded-xl dark:bg-card dark:border',
+        className,
       )}
       {...props}
     >
       <p>{item.icon}</p>
-      <p className={cn(`text-sm font-medium text-center`)}>{item.label}</p>
+      <p className='text-sm font-medium text-center'>{item.label}</p>
       <span className='font-medium text-foreground text-center'>
         {item.value || 'Indisponível'}
       </span>
