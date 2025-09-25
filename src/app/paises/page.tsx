@@ -1,8 +1,4 @@
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Hero,
   HeroBadge,
   HeroBanner,
@@ -10,9 +6,14 @@ import {
   HeroHeader,
   HeroOverlay,
   HeroTitle,
+  Container,
+  DashboardCard,
+  DashboardCardHeader,
+  DashboardCardTitle,
+  DashboardCardContent,
 } from '@/components/ui';
 import { PaisesLayout } from '@/components';
-import { IconDatabaseImport } from '@tabler/icons-react';
+import { IconDatabaseImport, IconSparkles } from '@tabler/icons-react';
 
 export default function Paises() {
   return (
@@ -42,23 +43,27 @@ export default function Paises() {
 
       <PaisesLayout />
 
-      <Card className='gap-2 max-w-4xl mx-auto mt-8'>
-        <CardHeader>
-          <CardTitle>Dicas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className='list-disc list-inside space-y-1'>
-            <li>
+      <Container>
+        <DashboardCard className='gap-2 bg-gradient-to-br from-slate-50 to-blue-100 dark:bg-none dark:bg-card'>
+          <DashboardCardHeader>
+            <DashboardCardTitle className='[&_svg]:text-blue-700 [&_svg]:bg-blue-100'>
+              <h4 className='flex items-center gap-2'>
+                <IconSparkles /> Dicas
+              </h4>
+            </DashboardCardTitle>
+          </DashboardCardHeader>
+          <DashboardCardContent className='px-6 text-muted-foreground space-y-2'>
+            <p>
               Em pesquisas pouco específicas, será exibido o primeiro país
               retornado pela API.
-            </li>
-            <li>
+            </p>
+            <p>
               Você pode pesquisar o nome do país em diversas línguas, porém a
               ortografia e o nome devem estar corretos e completos.
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+            </p>
+          </DashboardCardContent>
+        </DashboardCard>
+      </Container>
     </>
   );
 }
