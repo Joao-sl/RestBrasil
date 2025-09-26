@@ -14,6 +14,18 @@ import {
 } from '@/components/ui';
 import { PaisesLayout } from '@/components';
 import { IconDatabaseImport, IconSparkles } from '@tabler/icons-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Países',
+  description: 'Busque informações de todos os países do mundo.',
+  keywords: [
+    'Países',
+    'Dados de países',
+    'Rest countries',
+    'Rest countries dashboard',
+  ],
+};
 
 export default function Paises() {
   return (
