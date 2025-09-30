@@ -25,16 +25,18 @@ export async function GET(request: NextRequest) {
     }
 
     if (data.length > 1) {
-      const filtered = data.filter(country => {
-        return Object.keys(country.translations ?? {}).some(
-          lang =>
-            country.translations?.[lang]?.common?.toLowerCase() ===
-            countryParam?.toLowerCase(),
-        );
-      });
+      try {
+        const filtered = data.filter(country => {
+          return Object.keys(country.translations ?? {}).some(
+            lang =>
+              country.translations?.[lang]?.common?.toLowerCase() ===
+              countryParam?.toLowerCase(),
+          );
+        });
 
-      if (filtered) {
         return NextResponse.json(filtered[0]);
+      } catch {
+        return NextResponse.json(data[0]);
       }
     }
 
