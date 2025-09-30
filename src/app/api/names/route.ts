@@ -1,5 +1,5 @@
 import { fetchHandler } from '@/helpers';
-import { NameBasic, NameMap, NameRaking, NameRange } from '@/lib';
+import { NameBasic, NameMap, NameRanking, NameRange } from '@/lib';
 import { NextRequest, NextResponse } from 'next/server';
 
 function normalize<T>(
@@ -23,7 +23,10 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const name = params.get('name');
   const sex = params.get('sex') || ' ';
-  const state = params.get('state') || 0;
+  const state =
+    params.get('state')?.toUpperCase() === 'BR'
+      ? undefined
+      : params.get('state');
 
   try {
     const promiseBasic = fetchHandler<NameBasic[]>(
@@ -35,8 +38,16 @@ export async function GET(request: NextRequest) {
     const promiseRange = fetchHandler<NameRange[]>(
       `https://servicodados.ibge.gov.br/api/v1/censos/nomes/faixa?nome=${name}&localidade=${state}&sexo=${sex}`,
     );
-    const promiseRanking = fetchHandler<NameRaking[]>(
-      `https://servicodados.ibge.gov.br/api/v1/censos/nomes/ranking?&regiao=${state}sexo=${sex}`,
+    const promiseRanking = fetchHandler<NameRanking[]>(
+      `https://servicodados.ibge.gov.br/api/v1/censos/nomes/ranking?&${
+        state ? `regiao=${state}&` : ''
+      }sexo=${sex}`,
+    );
+
+    console.log(
+      `https://servicodados.ibge.gov.br/api/v1/censos/nomes/ranking?&${
+        state ? `regiao=${state}` : ''
+      }sexo=${sex}`,
     );
 
     const settled = await Promise.allSettled([
@@ -54,11 +65,11 @@ export async function GET(request: NextRequest) {
     const dataBasic = normalize<NameBasic[]>(settledBasic);
     const dataMap = normalize<NameMap[]>(settledMap);
     const dataRange = normalize<NameRange[]>(settledRange);
-    const dataRanking = normalize<NameRaking[]>(settledRanking);
+    const dataRanking = normalize<NameRanking[]>(settledRanking);
 
     if (
-      dataBasic?.data?.length === 0 ||
-      dataMap?.data?.length === 0 ||
+      dataBasic?.data?.length === 0 &&
+      dataMap?.data?.length === 0 &&
       dataRange?.data?.length === 0
     ) {
       return NextResponse.json(
@@ -71,7 +82,7 @@ export async function GET(request: NextRequest) {
     }
 
     const response = {
-      dataBasic: dataBasic?.data,
+      dataBasic: dataBasic?.data?.[0],
       dataMap: dataMap?.data,
       dataRange: dataRange?.data,
       dataRanking: dataRanking?.data,

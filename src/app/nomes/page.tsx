@@ -1,6 +1,10 @@
 import { NomesLayout } from '@/components';
 import {
-  Card,
+  Container,
+  DashboardCard,
+  DashboardCardContent,
+  DashboardCardHeader,
+  DashboardCardTitle,
   Hero,
   HeroBadge,
   HeroBanner,
@@ -9,17 +13,17 @@ import {
   HeroOverlay,
   HeroTitle,
 } from '@/components/ui';
-import { CardContent } from '@/components/ui/card';
 import { fetchHandler } from '@/helpers';
 import { mapState } from '@/helpers/mappers';
 import { StateRawResponse } from '@/lib';
-import { IconUserFilled } from '@tabler/icons-react';
+import { IconSparkles, IconUserFilled } from '@tabler/icons-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Nomes',
   description:
     'Veja estatísticas sobre nomes brasileiros de acordo com censo de 2010 de IBGE',
+  keywords: ['IBGE 2010', 'Nomes', 'Nomes Brasil', 'Nomes Populares'],
 };
 
 export default async function Nomes() {
@@ -62,24 +66,32 @@ export default async function Nomes() {
 
       <NomesLayout states={mappedData} />
 
-      <div className='mt-8'>
-        <Card>
-          <CardContent>
-            <div className='space-y-2'>
-              <h3 className='font-semibold text-lg'>Dicas</h3>
-              <ul className='list-disc list-inside'>
-                <li>Infelizmente a API não aceita nomes compostos.</li>
-                <li>Todos os dados são referentes ao censo de 2010.</li>
-                <li>
-                  Somente são apresentados os nomes cuja frequência é maior ou
-                  igual a 20 para o total Brasil.
-                </li>
-              </ul>
-            </div>
-            <span>Fonte dos dados: IBGE censo 2010</span>
-          </CardContent>
-        </Card>
-      </div>
+      <Container>
+        <section>
+          <DashboardCard className='gap-2 bg-gradient-to-br from-violet-50 to-blue-100 dark:bg-none dark:bg-card'>
+            <DashboardCardHeader>
+              <DashboardCardTitle className='[&_svg]:text-blue-700 [&_svg]:bg-blue-100'>
+                <IconSparkles /> <h3>Dicas</h3>
+              </DashboardCardTitle>
+            </DashboardCardHeader>
+
+            <DashboardCardContent>
+              <div className='space-y-2 text-muted-foreground'>
+                <ul className='space-y-2'>
+                  <li>Infelizmente nomes compostos não são aceitos.</li>
+                  <li>
+                    Todos os dados são referentes ao censo de 2010 do IBGE.
+                  </li>
+                  <li>
+                    Só serão apresentados dados dos os nomes cuja frequência é
+                    maior ou igual a vinte para o total Brasil.
+                  </li>
+                </ul>
+              </div>
+            </DashboardCardContent>
+          </DashboardCard>
+        </section>
+      </Container>
     </>
   );
 }

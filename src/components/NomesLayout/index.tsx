@@ -1,9 +1,8 @@
 'use client';
 
-import clsx from 'clsx';
 import { useState } from 'react';
 import { fetchHandler } from '@/helpers';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import type {
   NameBasic,
   NameMap,
@@ -13,10 +12,17 @@ import type {
   StateData,
 } from '@/lib';
 import {
+  IconChartLine,
+  IconCrown,
   IconGlobe,
+  IconGraphFilled,
+  IconLaurelWreath1,
+  IconMapPinFilled,
   IconSearch,
   IconTarget,
+  IconTrendingUp,
   IconUser,
+  IconUsers,
 } from '@tabler/icons-react';
 import {
   Button,
@@ -24,11 +30,15 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  Container,
   DashboardCard,
+  DashboardCardAction,
   DashboardCardContent,
   DashboardCardDescription,
   DashboardCardDl,
+  DashboardCardFeatured,
   DashboardCardHeader,
+  DashboardCardItem,
   DashboardCardTitle,
   HeroButton,
   HeroCard,
@@ -48,9 +58,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui';
+import clsx from 'clsx';
 
 type NomesLayoutProps = {
   states: StateData[] | null;
+};
+
+type Data = {
+  dataBasic: NameBasic | undefined;
+  dataMap: NameMap[] | undefined;
+  dataRange: NameRange[] | undefined;
+  dataRanking: NameRanking[] | undefined;
 };
 
 export function NomesLayout({ states }: NomesLayoutProps) {
@@ -62,10 +80,7 @@ export function NomesLayout({ states }: NomesLayoutProps) {
   const [sex, setSex] = useState('');
   const [state, setState] = useState('BR');
 
-  const [dataBasic, setDataBasic] = useState<NameBasic[] | string>('');
-  const [dataMap, setDataMap] = useState<NameMap[] | string>('');
-  const [dataRange, setDataRange] = useState<NameRange[] | string>('');
-  const [dataRanking, setDataRanking] = useState<NameRanking[] | string>('');
+  const [data, setData] = useState<Data | undefined>();
 
   const sexOptions = [
     { value: ' ', label: 'Ambos' },
@@ -82,10 +97,7 @@ export function NomesLayout({ states }: NomesLayoutProps) {
     const cleanedName = name.trim();
     setFormErrors([]);
     setNoDataError(null);
-    setDataBasic('');
-    setDataRange('');
-    setDataRanking('');
-    setDataMap('');
+    setData(undefined);
 
     const validations = [
       {
@@ -121,85 +133,127 @@ export function NomesLayout({ states }: NomesLayoutProps) {
         return;
       }
 
-      const errorMsg = 'Erro ao recuperar os dados.';
-      setDataBasic(data?.dataBasic || errorMsg);
-      setDataMap(data?.dataMap || errorMsg);
-      setDataRange(data?.dataRange || errorMsg);
-      setDataRanking(data?.dataRanking || errorMsg);
+      setData({
+        dataBasic: data?.dataBasic,
+        dataMap: data?.dataMap,
+        dataRange: data?.dataRange,
+        dataRanking: data?.dataRanking,
+      });
       setName('');
     } finally {
       setIsPending(false);
     }
   }
 
+  const statisticsCard = {
+    title: (
+      <h3 className='inline-flex items-center gap-2'>
+        <IconChartLine /> Estatísticas
+      </h3>
+    ),
+    description: <p>Análise baseada nos dados do IBGE.</p>,
+
+    featured: [
+      {
+        icon: <IconCrown />,
+        label: 'Ranking',
+        value: `${data?.dataBasic?.rank.toLocaleString('pt-BR')}°`,
+      },
+      {
+        icon: <IconUsers />,
+        label: 'Pessoas',
+        value: data?.dataBasic?.freq.toLocaleString('pt-BR'),
+      },
+    ],
+
+    fields: [
+      {
+        contentLabel: 'Porcentagem ',
+        content: `${
+          data?.dataBasic?.percentual.toFixed(2) === '0.00'
+            ? '0.01'
+            : data?.dataBasic?.percentual.toFixed(2)
+        }%`,
+      },
+      {
+        contentLabel: 'Estado Líder',
+        content: data?.dataBasic?.ufMax,
+      },
+      {
+        contentLabel: 'Taxa por 100k hab.',
+        content:
+          Number(data?.dataBasic?.ufMaxProp).toFixed(2) ?? 'Indisponível',
+      },
+      {
+        contentLabel: 'Nomes Semelhantes',
+        content: [
+          <dt key={'dt-links'} className='sr-only'>
+            Nomes Semelhantes
+          </dt>,
+          <dd key={'name-links'} className='space-x-3 space-y-1'>
+            {data?.dataBasic?.nomes
+              ? data?.dataBasic?.nomes?.split(',').map((name, idx) => {
+                  return (
+                    <Button
+                      onClick={() => {
+                        setName(name);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        window.document.getElementById('name')?.focus();
+                      }}
+                      variant={'link'}
+                      key={idx}
+                      className='p-0 text-blue-700 dark:text-blue-500'
+                    >
+                      {name}
+                    </Button>
+                  );
+                })
+              : 'Indisponível'}
+          </dd>,
+        ],
+      },
+    ],
+  };
+
+  const higherBirthRate = data?.dataRange?.reduce(
+    (acc, item) => (item.freq > acc.freq ? item : acc),
+    data.dataRange[0],
+  );
+
+  const statisticsTheme = {
+    card: 'bg-gradient-to-br from-white to-blue-50 dark:bg-none dark:bg-card',
+    title: '[&_svg]:text-blue-700 [&_svg]:bg-blue-50 [&_svg]:text-blue-500',
+    featured:
+      'bg-blue-50 text-blue-700 [&_svg]:h-7 [&_svg]:w-7 text-lg dark:text-blue-500',
+    dtClasses: 'border-blue-100',
+    ddClasses: 'bg-blue-700',
+  };
+
+  const chartTheme = {
+    card: 'bg-gradient-to-br from-white to-blue-100 dark:bg-none dark:bg-card',
+    title:
+      '[&_svg]:text-blue-700 [&_svg]:bg-gradient-to-br [&_svg]:from-blue-100 [&_svg]:to-violet-100',
+    fill: 'oklch(48.8% 0.243 264.376)',
+  };
+
+  const tableCard = {
+    card: 'bg-gradient-to-br from-slate-50 to-slate-200 dark:bg-none dark:bg-card',
+    title:
+      '[&_svg]:text-slate-700 [&_svg]:bg-gradient-to-br [&_svg]:from-slate-300 [&_svg]:to-blue-100',
+  };
+
   const chartConfig = {
     freq: {
-      label: 'Pessoas:',
+      label: 'Pessoas: ',
       color: '#2563eb',
     },
   } satisfies ChartConfig;
 
-  const errorClasses = 'text-red-500 font-semibold';
-  const rankingSliced = [
-    dataRanking.slice(0, dataRanking.length / 2),
-    dataRanking.slice(dataRanking.length / 2),
-  ];
-
-  const basicCardItems = Array.isArray(dataBasic)
-    ? [
-        {
-          fields: [
-            {
-              contentLabel: 'Ranking',
-              content: `${dataBasic[0].rank}°`,
-            },
-            {
-              contentLabel: 'Quantidade',
-              content: `${dataBasic[0].freq.toLocaleString('pt-BR')} Pessoas`,
-            },
-            {
-              contentLabel: 'Porcentagem',
-              content: `${
-                dataBasic[0].percentual.toFixed(2) === '0.00'
-                  ? '0.01'
-                  : dataBasic[0].percentual.toFixed(2)
-              }%`,
-            },
-          ],
-        },
-        {
-          fields: [
-            {
-              contentLabel: 'Maior taxa por 100.000 pessoas',
-              content: dataBasic[0].ufMax,
-            },
-            { contentLabel: 'Taxa', content: dataBasic[0]?.ufMaxProp },
-            {
-              contentLabel: 'Nomes semelhantes',
-              content: (
-                <div>
-                  {dataBasic[0].nomes.split(',').map((name, idx) => {
-                    return (
-                      <Button
-                        onClick={() => {
-                          setName(name);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                          window.document.getElementById('nome')?.focus();
-                        }}
-                        variant={'link'}
-                        key={idx}
-                      >
-                        {name}
-                      </Button>
-                    );
-                  })}
-                </div>
-              ),
-            },
-          ],
-        },
-      ]
-    : 'Erro ao recuperar dados';
+  const NoDataErrorJsx = (
+    <span role='status' className='text-red-500 font-semibold'>
+      Desculpe, não conseguimos recuperar esses dados.
+    </span>
+  );
 
   return (
     <>
@@ -222,6 +276,7 @@ export function NomesLayout({ states }: NomesLayoutProps) {
               id='name'
               value={name}
               icon={<IconSearch />}
+              placeholder='Ex: Lara, Larissa, Soph...'
               onChange={e => setName(e.target.value)}
               onKeyDown={e => {
                 if (e.key === 'Enter') handleSearch();
@@ -270,7 +325,7 @@ export function NomesLayout({ states }: NomesLayoutProps) {
             name='search'
             disabled={isPending}
             onClick={handleSearch}
-            className='min-w-24 self-end'
+            className='min-w-24 self-end bg-gradient-to-br from-blue-600  to-blue-800'
           >
             {isPending ? <LoadingSpinner color='white' /> : <IconSearch />}
             {isPending ? '' : 'Buscar'}
@@ -278,215 +333,321 @@ export function NomesLayout({ states }: NomesLayoutProps) {
         </HeroCardContent>
 
         {(formErrors.length > 0 || noDataError) && (
-          <span
+          <div
             id='error'
             role='alert'
-            className='w-full text-left text-sm font-medium text-red-500'
+            className='text-left w-full text-sm font-medium text-red-500'
           >
-            {formErrors.length > 0 ? formErrors : noDataError}
-          </span>
+            {formErrors.length > 0 ? (
+              formErrors.map((item, idx) => {
+                return (
+                  <span key={idx} className='block'>
+                    {item}
+                  </span>
+                );
+              })
+            ) : (
+              <span>{noDataError}</span>
+            )}
+          </div>
         )}
       </HeroCard>
 
-      {isPending && (
-        <div className='flex items-center justify-center'>
-          <LoadingSpinner />
-        </div>
-      )}
+      {data && (
+        <Container asChild className='space-y-8 pb-0'>
+          <section>
+            {isPending && (
+              <div className='flex items-center justify-center'>
+                <LoadingSpinner />
+              </div>
+            )}
 
-      <section
-        id='basic-info-and-chart'
-        className='grid grid-cols-1 lg:grid-cols-[30vw_auto] gap-8 mt-8'
-      >
-        {dataBasic && (
-          <DashboardCard>
-            <DashboardCardHeader>
-              <DashboardCardTitle>Infos</DashboardCardTitle>
-              <DashboardCardDescription>
-                Informações básicas de acordos com a pesquisa
-              </DashboardCardDescription>
-            </DashboardCardHeader>
+            <h1 className='text-slate-700 text-center text-6xl font-bold dark:text-slate-200'>
+              {data?.dataBasic?.nome}
+            </h1>
 
-            <DashboardCardContent className='space-y-6'>
-              {Array.isArray(basicCardItems) ? (
-                basicCardItems.map((item, idx) => {
-                  return (
-                    <DashboardCardDl
-                      key={idx}
-                      fields={item.fields}
-                    ></DashboardCardDl>
-                  );
-                })
-              ) : (
-                <p className={errorClasses}>{basicCardItems}</p>
-              )}
-            </DashboardCardContent>
-          </DashboardCard>
-        )}
+            <div className='grid grid-cols-1 lg:grid-cols-[33%_auto] gap-8'>
+              <DashboardCard className={statisticsTheme.card}>
+                <DashboardCardHeader>
+                  <DashboardCardTitle className={statisticsTheme.title}>
+                    {statisticsCard.title}
+                  </DashboardCardTitle>
+                  <DashboardCardDescription>
+                    {statisticsCard.description}
+                  </DashboardCardDescription>
+                </DashboardCardHeader>
 
-        {(dataRange && (
-          <DashboardCard>
-            <DashboardCardHeader>
-              <DashboardCardTitle>
-                {Array.isArray(dataBasic) ? dataBasic[0].nome : 'Gráfico'}
-              </DashboardCardTitle>
-              <DashboardCardDescription>
-                Gráfico de nascimentos a cada década
-              </DashboardCardDescription>
-            </DashboardCardHeader>
+                <DashboardCardContent className='space-y-6'>
+                  {data?.dataBasic ? (
+                    <>
+                      <DashboardCardFeatured className='grid grid-cols-2 gap-4'>
+                        {statisticsCard.featured.map((item, idx) => (
+                          <DashboardCardItem
+                            item={item}
+                            key={idx}
+                            className={statisticsTheme.featured}
+                          />
+                        ))}
+                      </DashboardCardFeatured>
 
-            <DashboardCardContent>
-              {Array.isArray(dataRange) && (
-                <ChartContainer config={chartConfig} className='w-full'>
-                  <BarChart accessibilityLayer data={dataRange}>
-                    <CartesianGrid vertical={false} />
-                    <YAxis
-                      tickLine={true}
-                      axisLine={false}
-                      tickFormatter={value => value.toLocaleString('pt-BR')}
-                    />
-                    <XAxis
-                      dataKey='faixa'
-                      tickLine={false}
-                      tickMargin={10}
-                      axisLine={true}
-                      tickFormatter={value => value.slice(1, 5)}
-                    ></XAxis>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey='freq' fill='var(--chart-1)' radius={8}></Bar>
-                  </BarChart>
-                </ChartContainer>
-              )}
-            </DashboardCardContent>
-          </DashboardCard>
-        )) || <p className={errorClasses}>{dataRange.toString()}</p>}
-      </section>
+                      <DashboardCardDl
+                        fields={statisticsCard.fields}
+                        ddClasses={statisticsTheme.ddClasses}
+                        className={statisticsTheme.dtClasses}
+                      />
+                    </>
+                  ) : (
+                    NoDataErrorJsx
+                  )}
+                </DashboardCardContent>
+              </DashboardCard>
 
-      {dataMap && (
-        <section id='table-by-state'>
-          <DashboardCard>
-            <DashboardCardHeader>
-              <DashboardCardTitle>Tabela Por Estado</DashboardCardTitle>
-              <DashboardCardDescription>
-                Tabela com estado, população, quantidade pessoas com o nome
-                pesquisado e a taxa a cada 100 mil pessoas
-              </DashboardCardDescription>
-            </DashboardCardHeader>
+              <DashboardCard className={chartTheme.card}>
+                <DashboardCardHeader>
+                  <DashboardCardTitle className={chartTheme.title}>
+                    <IconTrendingUp />{' '}
+                    <h3>
+                      Popularidade do nome{' '}
+                      <span className='bg-gradient-to-br from-blue-600 to-violet-600 text-transparent bg-clip-text'>
+                        {data?.dataBasic?.nome}
+                      </span>
+                    </h3>
+                  </DashboardCardTitle>
+                  <DashboardCardDescription>
+                    <p>Popularidade ao longo das décadas</p>
+                  </DashboardCardDescription>
 
-            <DashboardCardContent className='h-120 overflow-auto'>
-              {Array.isArray(dataMap) ? (
-                <Table className='rounded-t-md overflow-hidden'>
-                  <TableHeader className='bg-primary'>
-                    <TableRow className='border-muted hover:bg-transparent'>
-                      <TableHead className='text-white'>Estado</TableHead>
-                      <TableHead className='text-right text-white'>
-                        População
-                      </TableHead>
-                      <TableHead className='text-right text-white'>
-                        Quantidade
-                      </TableHead>
-                      <TableHead className='text-right text-white'>
-                        A cada 100 mil
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
+                  {higherBirthRate && (
+                    <DashboardCardAction>
+                      <p className='text-xl sm:text-2xl font-semibold'>
+                        {higherBirthRate.freq.toLocaleString('pt-BR')}
+                      </p>
+                      <p className='text-sm text-right text-muted-foreground'>
+                        Pico em {higherBirthRate.faixa.slice(1, 5)}
+                      </p>
+                    </DashboardCardAction>
+                  )}
+                </DashboardCardHeader>
 
-                  <TableBody>
-                    {dataMap.map((item, idx) => {
-                      return (
-                        <TableRow
-                          key={idx}
-                          className='font-medium border-muted'
-                        >
-                          <TableCell className='py-3 min-w-40'>
-                            {item.nome}
-                          </TableCell>
-                          <TableCell className='text-right py-3 min-w-35'>
-                            {item.populacao.toLocaleString('pt-BR')}
-                          </TableCell>
-                          <TableCell className='text-right py-3 min-w-35'>
-                            {item.freq.toLocaleString('pt-BR')}
-                          </TableCell>
-                          <TableCell className='text-right py-3 min-w-35'>
-                            {item.prop.toLocaleString('pt-BR')}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className={errorClasses}>{dataMap.toString()}</p>
-              )}
-            </DashboardCardContent>
-          </DashboardCard>
-        </section>
-      )}
-
-      {dataRanking && (
-        <section id='ranking-by-search-params'>
-          <DashboardCard>
-            <DashboardCardHeader>
-              <DashboardCardTitle>Ranking</DashboardCardTitle>
-              <DashboardCardDescription>
-                Esse ranking é baseado nos parâmetros da pesquisa.
-              </DashboardCardDescription>
-            </DashboardCardHeader>
-
-            <DashboardCardContent>
-              {Array.isArray(dataRanking) &&
-              rankingSliced.every(array => Array.isArray(array)) ? (
-                <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6'>
-                  {rankingSliced.map((item, idx) => {
-                    return (
-                      <Table key={idx} className='rounded-t-md overflow-hidden'>
-                        <TableHeader className='bg-primary'>
-                          <TableRow
-                            className={clsx(
-                              idx === 1 ? 'hidden sm:table-row' : '',
-                              'border-muted hover:bg-transparent',
-                            )}
-                          >
-                            <TableHead className='text-white'>
-                              Ranking
-                            </TableHead>
-                            <TableHead className='text-white text-right'>
-                              Nome
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-
-                        <TableBody
+                <DashboardCardContent>
+                  {Array.isArray(data?.dataRange) ? (
+                    <>
+                      {data?.dataRange.length > 0 ? (
+                        <ChartContainer config={chartConfig}>
+                          <AreaChart accessibilityLayer data={data?.dataRange}>
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                              dataKey='faixa'
+                              tickLine={true}
+                              tickMargin={10}
+                              axisLine={true}
+                              tickFormatter={value => value.slice(1, 5)}
+                            />
+                            <YAxis
+                              tickLine={true}
+                              axisLine={true}
+                              tickFormatter={value =>
+                                value.toLocaleString('pt-BR')
+                              }
+                            />
+                            <ChartTooltip
+                              cursor={false}
+                              content={<ChartTooltipContent indicator='line' />}
+                            />
+                            <Area
+                              dataKey='freq'
+                              type='natural'
+                              fill={chartTheme.fill}
+                              stroke={chartTheme.fill}
+                              strokeWidth={2}
+                              fillOpacity={0.4}
+                            />
+                          </AreaChart>
+                        </ChartContainer>
+                      ) : (
+                        <p
                           className={clsx(
-                            idx === 0
-                              ? '[&_tr:last-child]:border-b-1 sm:[&_tr:last-child]:border-b-0'
-                              : '',
+                            'flex items-center justify-center gap-2',
+                            'text-yellow-800 font-semibold text-lg px-5 py-4',
+                            'bg-yellow-100 border border-yellow-300 rounded-md',
                           )}
                         >
-                          {item.map((data, i) => {
-                            return (
-                              <TableRow
-                                key={i}
-                                className='border-muted font-medium'
-                              >
-                                <TableCell>{data.rank}°</TableCell>
-                                <TableCell className='text-right text-muted-foreground py-2.5'>
-                                  {data.nome}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className={errorClasses}>{dataRanking.toString()}</p>
-              )}
-            </DashboardCardContent>
-          </DashboardCard>
-        </section>
+                          <span>
+                            <IconGraphFilled size={30} />
+                          </span>
+                          Gráfico Indisponível
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    NoDataErrorJsx
+                  )}
+                </DashboardCardContent>
+              </DashboardCard>
+            </div>
+
+            <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
+              <DashboardCard className={tableCard.card}>
+                <DashboardCardHeader>
+                  <DashboardCardTitle className={tableCard.title}>
+                    <IconMapPinFilled /> <h3>Tabela Por Estado</h3>
+                  </DashboardCardTitle>
+                  <DashboardCardDescription>
+                    <p>
+                      Ranking dos estados com maior concentração do nome
+                      pesquisado.
+                    </p>
+                  </DashboardCardDescription>
+                </DashboardCardHeader>
+
+                <DashboardCardContent
+                  className={clsx(
+                    'h-120 overflow-auto relative [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar]:h-2',
+                    '[&::-webkit-scrollbar-track]:bg-slate-700/10 [&::-webkit-scrollbar-thumb]:bg-slate-700',
+                    '[&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:rounded-full',
+                  )}
+                >
+                  {Array.isArray(data?.dataMap) ? (
+                    <Table
+                      className='overflow-visible'
+                      wrapperClasses='overflow-visible'
+                    >
+                      <TableHeader className='bg-slate-700 sticky top-0 z-1'>
+                        <TableRow className='border-muted hover:bg-transparent'>
+                          <TableHead className='text-white rounded-tl-md'>
+                            Estado
+                          </TableHead>
+                          <TableHead className='text-right text-white'>
+                            População
+                          </TableHead>
+                          <TableHead className='text-right text-white'>
+                            Quantidade
+                          </TableHead>
+                          <TableHead className='text-right text-white rounded-tr-md'>
+                            Taxa/100k
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody className='[&_tr:last-child]:border-b'>
+                        {data?.dataMap.map((item, idx) => {
+                          return (
+                            <TableRow
+                              key={idx}
+                              className={clsx(
+                                'font-medium border-slate-200 hover:bg-slate-200',
+                                'dark:border-slate-700 dark:hover:bg-slate-800',
+                              )}
+                            >
+                              <TableCell className='py-3 min-w-38'>
+                                {item.nome}
+                              </TableCell>
+                              <TableCell className='text-right text-muted-foreground py-3'>
+                                {item.populacao.toLocaleString('pt-BR')}
+                              </TableCell>
+                              <TableCell className='text-right py-3 text-muted-foreground'>
+                                {item.freq.toLocaleString('pt-BR')}
+                              </TableCell>
+                              <TableCell className='text-right py-3 text-muted-foreground'>
+                                {item.prop.toLocaleString('pt-BR')}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    NoDataErrorJsx
+                  )}
+                </DashboardCardContent>
+              </DashboardCard>
+
+              <DashboardCard className={tableCard.card}>
+                <DashboardCardHeader>
+                  <DashboardCardTitle className={tableCard.title}>
+                    <IconLaurelWreath1 /> <h3>Top 20 Nomes</h3>
+                  </DashboardCardTitle>
+                  <DashboardCardDescription>
+                    <p>
+                      Esse ranking de nomes é baseado nos parâmetros sexo e
+                      estado da pesquisa.
+                    </p>
+                  </DashboardCardDescription>
+                </DashboardCardHeader>
+
+                <DashboardCardContent className='grid grid-cols-2'>
+                  {Array.isArray(data?.dataRanking) ? (
+                    <Table className='overflow-hidden rounded-tl-md'>
+                      <TableHeader className='bg-slate-700'>
+                        <TableRow className='hover:bg-transparent'>
+                          <TableHead className='text-white'>Rank</TableHead>
+                          <TableHead className='text-white'>Nome</TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody className='[&_tr:last-child]:border-b'>
+                        {data?.dataRanking.slice(0, 10).map((item, idx) => {
+                          return (
+                            <TableRow
+                              key={idx}
+                              className={clsx(
+                                'font-medium border-slate-200 hover:bg-slate-200',
+                                'dark:border-slate-700 dark:hover:bg-slate-800',
+                              )}
+                            >
+                              <TableCell className='py-3'>
+                                {item.rank}°
+                              </TableCell>
+                              <TableCell className='py-3 text-muted-foreground'>
+                                {item.nome}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    NoDataErrorJsx
+                  )}
+
+                  {Array.isArray(data?.dataRanking) ? (
+                    <Table className='overflow-hidden rounded-tr-md'>
+                      <TableHeader className='bg-slate-700'>
+                        <TableRow className='hover:bg-transparent'>
+                          <TableHead className='text-white'>Rank</TableHead>
+                          <TableHead className='text-white'>Nome</TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody className='[&_tr:last-child]:border-b'>
+                        {data?.dataRanking.slice(10).map((item, idx) => {
+                          return (
+                            <TableRow
+                              key={idx}
+                              className={clsx(
+                                'font-medium border-slate-200 hover:bg-slate-200',
+                                'dark:border-slate-700 dark:hover:bg-slate-800',
+                              )}
+                            >
+                              <TableCell className='py-3'>
+                                {item.rank}°
+                              </TableCell>
+                              <TableCell className='py-3 text-muted-foreground'>
+                                {item.nome}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    NoDataErrorJsx
+                  )}
+                </DashboardCardContent>
+              </DashboardCard>
+            </div>
+          </section>
+        </Container>
       )}
     </>
   );

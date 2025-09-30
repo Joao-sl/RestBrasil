@@ -38,7 +38,7 @@ export interface NameRanking {
 }
 
 export interface NameUnion {
-  dataBasic: NameBasic[];
+  dataBasic: NameBasic;
   dataMap: NameMap[];
   dataRange: NameRange[];
   dataRanking: NameRanking[];
