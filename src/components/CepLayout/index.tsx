@@ -3,7 +3,7 @@
 import { CepResponse } from '@/lib';
 import { fetchHandler, formatCep } from '@/helpers';
 import { useEffect, useRef, useState } from 'react';
-import { CepDashboard } from './CepUI/CepDashboard';
+import { CepDashboard } from './CepUI/cep-dashboard';
 import { IconSearch } from '@tabler/icons-react';
 import {
   HeroButton,

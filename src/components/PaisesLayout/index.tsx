@@ -5,7 +5,7 @@ import { fetchHandler } from '@/helpers';
 import { mapCountry } from '@/helpers/mappers';
 import { IconSearch } from '@tabler/icons-react';
 import { CountryMapped, CountryRaw } from '@/lib';
-import { PaisesDashboard } from './PaisesUI/PaisesDashboard';
+import { PaisesDashboard } from './PaisesUI/paises-dashboard';
 import {
   HeroButton,
   HeroCard,
