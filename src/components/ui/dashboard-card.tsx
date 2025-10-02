@@ -11,7 +11,7 @@ import {
 
 type DashboardDlProps = {
   fields?: {
-    contentLabel?: string;
+    contentLabel?: React.ReactNode;
     content?: React.ReactNode;
   }[];
   ddClasses?: string;
@@ -20,7 +20,7 @@ type DashboardDlProps = {
 type DashboardFeaturedProps = {
   item: {
     icon?: React.ReactNode;
-    label?: string;
+    label?: React.ReactNode | string;
     value?: string | React.ReactNode;
   };
   className?: string;

@@ -8,6 +8,7 @@ export { Button } from './button';
 export * from './card';
 export * from './chart';
 export * from './table';
+export * from './tooltip';
 
 // my
 export { InputWrapper } from './input-wrapper';
