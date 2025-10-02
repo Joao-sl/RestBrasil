@@ -1,5 +1,23 @@
 import clsx from 'clsx';
+import { CepResponse } from '@/lib';
 import { useCopyToClipboard } from '@/hooks';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  IconBuildings,
+  IconCode,
+  IconCopy,
+  IconCopyCheck,
+  IconHash,
+  IconLayoutGridFilled,
+  IconLocationFilled,
+  IconMailFilled,
+  IconMapPinFilled,
+  IconPhoneFilled,
+} from '@tabler/icons-react';
 import {
   Button,
   Container,
@@ -13,23 +31,24 @@ import {
   DashboardCardItem,
   DashboardCardTitle,
 } from '@/components/ui';
-import { CepResponse } from '@/lib';
-import {
-  IconBuildings,
-  IconCode,
-  IconCopy,
-  IconCopyCheck,
-  IconHash,
-  IconLayoutGridFilled,
-  IconLocationFilled,
-  IconMailFilled,
-  IconMapPinFilled,
-  IconPhoneFilled,
-} from '@tabler/icons-react';
 
 type CepCardsProps = {
   data: CepResponse | undefined;
 };
+
+function cepTooltip(trigger: React.ReactNode, content: React.ReactNode) {
+  return (
+    <Tooltip>
+      <TooltipTrigger>{trigger}</TooltipTrigger>
+      <TooltipContent
+        className='bg-violet-600 dark:text-white font-medium'
+        arrowClasses='fill-violet-600 bg-violet-600'
+      >
+        {content}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function CepDashboard({ data }: CepCardsProps) {
   const [copy, isCopied] = useCopyToClipboard();
@@ -92,11 +111,30 @@ export function CepDashboard({ data }: CepCardsProps) {
       description: 'Identificadores governamentais',
       featured: [
         { icon: <IconHash />, label: 'DDD', value: data?.ddd },
-        { icon: <IconPhoneFilled />, label: 'IBGE', value: data?.ibge },
+        {
+          icon: <IconPhoneFilled />,
+          label: cepTooltip(
+            'IBGE',
+            'Código único de 7 dígitos atribuído a cada município brasileiro pelo IBGE',
+          ),
+          value: data?.ibge,
+        },
       ],
       fields: [
-        { contentLabel: 'Código GIA', content: data?.gia },
-        { contentLabel: 'Código SIAFI', content: data?.siafi },
+        {
+          contentLabel: cepTooltip(
+            'Código GIA',
+            'Identificador usado exclusivamente no estado de São Paulo para empresas que precisam informar e apurar o ICMS (Imposto sobre Circulação de Mercadorias e Serviços)',
+          ),
+          content: data?.gia,
+        },
+        {
+          contentLabel: cepTooltip(
+            'Código SIAFI',
+            'Sistema usado pelo Governo Federal do Brasil para registrar, acompanhar e controlar a execução orçamentária, financeira e patrimonial.',
+          ),
+          content: data?.siafi,
+        },
       ],
     },
   ];
@@ -108,6 +146,7 @@ export function CepDashboard({ data }: CepCardsProps) {
     dtClasses: 'border-violet-100',
     ddClasses: 'bg-violet-600',
   };
+
   return (
     <>
       {data && (

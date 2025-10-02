@@ -1,3 +1,6 @@
+import clsx from 'clsx';
+import Image from 'next/image';
+import { Fragment } from 'react';
 import {
   Container,
   DashboardCard,
@@ -8,6 +11,9 @@ import {
   DashboardCardHeader,
   DashboardCardItem,
   DashboardCardTitle,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from '@/components/ui';
 import { CountryMapped } from '@/lib';
 import {
@@ -25,13 +31,24 @@ import {
   IconUsers,
   IconWorld,
 } from '@tabler/icons-react';
-import clsx from 'clsx';
-import Image from 'next/image';
-import { Fragment } from 'react';
 
 type PaisesDashboardProps = {
   data: CountryMapped | undefined;
 };
+
+function paisesTooltip(trigger: React.ReactNode, content: React.ReactNode) {
+  return (
+    <Tooltip>
+      <TooltipTrigger>{trigger}</TooltipTrigger>
+      <TooltipContent
+        className='bg-stone-600 dark:text-white font-medium'
+        arrowClasses='fill-stone-600 bg-stone-600'
+      >
+        {content}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function PaisesDashboard({ data }: PaisesDashboardProps) {
   const cardNames = {
@@ -145,7 +162,10 @@ export function PaisesDashboard({ data }: PaisesDashboardProps) {
         { contentLabel: 'Código internet', content: data?.tld?.join(', ') },
         { contentLabel: 'Membro da ONU', content: data?.unMember },
         {
-          contentLabel: 'GINI',
+          contentLabel: paisesTooltip(
+            'Percentual GINI',
+            'Medida estatística desenvolvida pelo matemático italiano Corrado Gini para quantificar o grau de desigualdade na distribuição de renda ou riqueza em uma sociedade, variando de 0 (igualdade completa) a 1 (desigualdade máxima).',
+          ),
           content: data?.gini
             ? Object.entries(data.gini).map(([key, value]) => {
                 return (
