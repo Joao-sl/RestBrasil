@@ -44,12 +44,6 @@ export async function GET(request: NextRequest) {
       }sexo=${sex}`,
     );
 
-    console.log(
-      `https://servicodados.ibge.gov.br/api/v1/censos/nomes/ranking?&${
-        state ? `regiao=${state}` : ''
-      }sexo=${sex}`,
-    );
-
     const settled = await Promise.allSettled([
       promiseBasic,
       promiseMap,
@@ -94,7 +88,7 @@ export async function GET(request: NextRequest) {
       {
         error: 'Unknown ERROR',
       },
-      { status: 400 },
+      { status: 500 },
     );
   }
 }
