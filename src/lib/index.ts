@@ -8,3 +8,4 @@ export type {
   NameRange,
   NameUnion,
 } from './name-interfaces';
+export type * from './weather-interface';
