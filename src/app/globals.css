@@ -16,7 +16,7 @@
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(55.202% 0.01541 285.833);
-  --accent: oklch(0.967 0.001 286.375);
+  --accent: oklch(92.248% 0.00279 285.787);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
@@ -111,11 +111,11 @@
 }
 
 @layer utilities {
-  .page-wrapper {
-    @apply flex-1 bg-blue-50 dark:bg-transparent;
+  .gradient-border-b {
+    @apply relative before:content-[""] before:absolute before:inset-x-0 before:bottom-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-primary/50 before:to-transparent border-b;
   }
-  .page-content {
-    @apply container mx-auto px-4 py-8;
+  .gradient-border-t {
+    @apply relative before:content-[""] before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-primary/50 before:to-transparent border-t;
   }
 }
 
@@ -146,4 +146,33 @@
     #0000 calc(100% - var(--spinner-width)),
     #000 0
   );
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float-0 {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-1 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-float-2 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-3 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 3s;
 }
