@@ -8,7 +8,7 @@ type MyThemeProviderProps = {
 
 export function MyThemeProvider({ children }: MyThemeProviderProps) {
   return (
-    <ThemeProvider attribute='class' defaultTheme='light'>
+    <ThemeProvider attribute='class' defaultTheme='system'>
       {children}
     </ThemeProvider>
   );
