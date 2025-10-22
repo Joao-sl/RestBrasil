@@ -1,8 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { MyThemeProvider } from '@/providers/theme-provider';
-import { Inter } from 'next/font/google';
 import { HomeMenu } from '@/components';
+import { Geist } from 'next/font/google';
+import { MyThemeProvider } from '@/providers/theme-provider';
 
 export const metadata: Metadata = {
   title: { default: 'RestBrasil', template: '%s - RestBrasil' },
@@ -10,11 +10,11 @@ export const metadata: Metadata = {
     'Acesse dados disponibilizados por diversas APIs ao redor do mundo de forma simples e prática.',
 };
 
-const inter = Inter({ subsets: ['latin'] });
-
 type RootLayoutProps = {
   children: Readonly<React.ReactNode>;
 };
+
+const geist = Geist({ subsets: ['latin'] });
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       lang='pt-BR'
       suppressHydrationWarning
       data-scroll-behavior='smooth'
-      className={inter.className}
+      className={geist.className}
     >
       <body>
         <MyThemeProvider>
