@@ -4,3 +4,4 @@ export { PaisesLayout } from '@/components/PaisesLayout';
 export { ClimaLayout } from '@/components/ClimaLayout';
 export { HomeMenu } from '@/components/HomeMenu';
 export { HomeLayout } from '@/components/HomeLayout';
+export { Footer } from '@/components/FooterLayout';
