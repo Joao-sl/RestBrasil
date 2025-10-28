@@ -32,7 +32,7 @@ function DashboardCard({
 }: React.ComponentProps<typeof Card>) {
   return (
     <Card
-      className={cn('shadow-lg border-0 dark:border', className)}
+      className={cn('shadow-lg/5 border-0 dark:border', className)}
       {...props}
     />
   );

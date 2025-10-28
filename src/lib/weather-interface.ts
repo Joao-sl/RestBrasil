@@ -114,7 +114,10 @@ export interface ForecastRawResponse {
 
 export interface WeatherForecasts {
   today: { hour: string; icon: string; temp: number; pop: number }[];
-  next_days: Record<string, { tempMax: number; tempMin: number; icon: string }>;
+  next_days: Record<
+    string,
+    { tempMax: number; tempMin: number; icon: string; desc: string }
+  >;
   today_higher_pop: number;
 }
 

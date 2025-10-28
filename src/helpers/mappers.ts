@@ -113,6 +113,7 @@ export function mapForecast(data: ForecastRawResponse): ForecastMapped {
       const pop = value.pop * 100;
       const icon = value.weather[0].icon.slice(0, 2);
       const weatherId = value.weather[0].id;
+      const desc = value.weather[0].description;
 
       if (dateTxt === localDateTxt) {
         acc.today.push({
@@ -135,6 +136,7 @@ export function mapForecast(data: ForecastRawResponse): ForecastMapped {
           tempMax,
           tempMin,
           icon,
+          desc,
         };
       } else {
         const day = acc.next_days[dateTxt];
@@ -151,6 +153,7 @@ export function mapForecast(data: ForecastRawResponse): ForecastMapped {
         if (iconId > newIconPriority) {
           day.icon = icon;
           iconId = newIconPriority;
+          day.desc = desc;
         }
       }
       return acc;

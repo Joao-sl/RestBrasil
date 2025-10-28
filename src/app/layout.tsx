@@ -24,10 +24,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
       data-scroll-behavior='smooth'
       className={geist.className}
     >
-      <body>
+      <body className='flex flex-col min-h-screen'>
         <MyThemeProvider>
           <HomeMenu />
-          {children}
+          <div className='flex-grow'>{children}</div>
           <Footer />
         </MyThemeProvider>
       </body>
