@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { fetchHandler } from '@/helpers';
-import { ForecastMapped, WeatherMapped } from '@/lib/weather-interface';
 import { IconSearch } from '@tabler/icons-react';
-import { WeatherCard } from './ClimaUI/weather-card';
-import { ForecastCard } from './ClimaUI/forecast-card';
-import { WeatherOverviewCard } from './ClimaUI/weather-overview-card';
+import { WeatherOverview } from './ClimaUI/weather-overview';
+import { ForecastCarousel } from './ClimaUI/forecast-carousel';
+import { ForecastMapped, WeatherMapped } from '@/lib/weather-interface';
 import {
   Container,
   HeroButton,
@@ -121,18 +120,13 @@ export function ClimaLayout() {
               Clima atual, {apiData.weather.city}, {apiData.weather.country}
             </h2>
 
-            <div className='grid grid-cols-1 lg:grid-cols-[30%_auto] gap-4'>
-              <WeatherCard
-                data={apiData.weather}
+            <div>
+              <WeatherOverview
+                weather={apiData.weather}
                 todayForecast={apiData.forecast.forecasts.today}
               />
 
-              <WeatherOverviewCard
-                data={apiData.weather}
-                todayPop={apiData.forecast.forecasts.today_higher_pop}
-              />
-
-              <ForecastCard data={apiData.forecast} />
+              <ForecastCarousel forecast={apiData.forecast} />
             </div>
           </section>
         </Container>
