@@ -29,7 +29,7 @@ type LogoProps = {
 
 export function Logo({ size = 'sm', className }: LogoProps) {
   return (
-    <div
+    <span
       className={cn(
         work_sans.className,
         sizeMap[size],
@@ -38,6 +38,6 @@ export function Logo({ size = 'sm', className }: LogoProps) {
       )}
     >
       RESTBRASIL
-    </div>
+    </span>
   );
 }
