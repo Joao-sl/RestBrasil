@@ -6,10 +6,10 @@ import { useBreakpoint } from '@/hooks';
 import { MobileMenu } from './mobile-menu';
 import { DesktopMenu } from './desktop-menu';
 import {
+  IconSignature,
   IconCloudFilled,
   IconFenceFilled,
   IconMapPinFilled,
-  IconSignature,
 } from '@tabler/icons-react';
 
 const navMainLinks: NavItem[] = [
@@ -44,26 +44,16 @@ const sitePages: NavItem[] = [
   },
 ];
 
-const logoUrl = '/logo.png';
-
 export function HomeMenu() {
   const isSmallScreen = useBreakpoint('(width <= 820px)');
 
   return (
-    <nav className='border-b'>
+    <nav className='border-b bg-gradient-to-br from-green-500/10 via-background to-blue-500/10'>
       <Container className='py-4'>
         {isSmallScreen ? (
-          <MobileMenu
-            navMainLinks={navMainLinks}
-            sitePages={sitePages}
-            logoUrl={logoUrl}
-          />
+          <MobileMenu navMainLinks={navMainLinks} sitePages={sitePages} />
         ) : (
-          <DesktopMenu
-            navMainLinks={navMainLinks}
-            sitePages={sitePages}
-            logoUrl={logoUrl}
-          />
+          <DesktopMenu navMainLinks={navMainLinks} sitePages={sitePages} />
         )}
       </Container>
     </nav>

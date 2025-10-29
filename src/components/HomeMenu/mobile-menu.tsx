@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { NavItem } from '@/lib';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -12,6 +11,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
+  Logo,
   ScrollArea,
   Sheet,
   SheetContent,
@@ -25,14 +25,9 @@ import {
 type MobileMenuProps = {
   navMainLinks: NavItem[];
   sitePages: NavItem[];
-  logoUrl: string;
 };
 
-export function MobileMenu({
-  navMainLinks,
-  sitePages,
-  logoUrl,
-}: MobileMenuProps) {
+export function MobileMenu({ navMainLinks, sitePages }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const pathName = usePathname();
@@ -46,18 +41,7 @@ export function MobileMenu({
   return (
     <div className='flex items-center justify-between'>
       <Link href={'/'} aria-label='Ir para home do site'>
-        {logoUrl ? (
-          <Image
-            src={logoUrl}
-            alt='Logo do site'
-            width={200}
-            height={200}
-            priority
-            className='object-contain h-6 w-auto'
-          />
-        ) : (
-          <div className='text-xl font-bold'>REST BRASIL</div>
-        )}
+        <Logo size='lg' />
       </Link>
 
       <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
@@ -70,14 +54,7 @@ export function MobileMenu({
         <SheetContent side='left' className='flex flex-col gap-0'>
           <SheetHeader className='mb-4 border-b pb-4'>
             <SheetTitle className='text-left'>
-              <Image
-                src={logoUrl}
-                alt='Logo do site'
-                width={200}
-                height={200}
-                priority
-                className='object-contain h-6 w-auto'
-              />
+              <Logo size='md' />
             </SheetTitle>
             <SheetDescription className='sr-only'>
               Menu de navegação do site

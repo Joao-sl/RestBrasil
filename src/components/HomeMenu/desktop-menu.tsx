@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { NavItem } from '@/lib';
 import { IconChevronDown } from '@tabler/icons-react';
@@ -7,6 +6,7 @@ import {
   NavigationMenuTrigger,
 } from '@radix-ui/react-navigation-menu';
 import {
+  Logo,
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuIndicator,
@@ -19,30 +19,18 @@ import {
 type DesktopMenuProps = {
   navMainLinks: NavItem[];
   sitePages: NavItem[];
-  logoUrl: string;
 };
 
-export function DesktopMenu({
-  navMainLinks,
-  sitePages,
-  logoUrl,
-}: DesktopMenuProps) {
+export function DesktopMenu({ navMainLinks, sitePages }: DesktopMenuProps) {
   return (
     <div>
-      <div className='flex justify-between'>
-        <Link href='/' aria-label='Voltar para pagina inicial'>
-          {logoUrl ? (
-            <Image
-              src={logoUrl}
-              alt='Logo do site'
-              width={200}
-              height={200}
-              aria-hidden='true'
-              className='h-auto w-36 hover:brightness-110 transition'
-            />
-          ) : (
-            <div className='text-xl font-bold'>REST BRASIL</div>
-          )}
+      <div className='flex items-center justify-between'>
+        <Link
+          href='/'
+          aria-label='Voltar para pagina inicial'
+          className='transition hover:brightness-175 dark:hover:brightness-75'
+        >
+          <Logo size='xl' />
         </Link>
 
         <div className='flex items-center gap-6 text-sm font-medium'>

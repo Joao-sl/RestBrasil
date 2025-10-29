@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Container } from '../ui';
+import { Container, Logo } from '@/components/ui';
 import { IconAt } from '@tabler/icons-react';
 
 function BrandLinkedin({ ...props }: React.ComponentProps<'svg'>) {
@@ -25,7 +25,9 @@ export function Footer() {
     <footer className='border-t'>
       <Container className='py-6 sm:py-4 flex flex-col items-center gap-8 sm:justify-between sm:flex-row'>
         <div className='flex flex-col gap-2'>
-          <p className='font-bold text-xl'>RESTBRASIL</p>
+          <p>
+            <Logo size='xl' className='cursor-default' />
+          </p>
 
           <p className='font-medium text-sm text-center sm:text-left'>
             Feito por{' '}
