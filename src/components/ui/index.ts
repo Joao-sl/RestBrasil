@@ -23,3 +23,4 @@ export { ToggleTheme } from './toggle-theme';
 export { Container } from './container';
 export * from './dashboard-card';
 export * from './hero';
+export * from './logo';
