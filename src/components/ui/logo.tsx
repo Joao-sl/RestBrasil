@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@/lib/utils';
 import { Work_Sans } from 'next/font/google';
 
 const work_sans = Work_Sans({
@@ -30,7 +30,7 @@ type LogoProps = {
 export function Logo({ size = 'sm', className }: LogoProps) {
   return (
     <div
-      className={clsx(
+      className={cn(
         work_sans.className,
         sizeMap[size],
         'font-black italic transition leading-none',
