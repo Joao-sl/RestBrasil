@@ -140,7 +140,7 @@ export function WeatherOverview({ weather, todayForecast }: NewClimaProps) {
             </div>
 
             <div className='md:text-right md:self-center space-y-4'>
-              <p className='md:place-self-end w-fit'>
+              <p className='md:ml-auto w-fit'>
                 <span className='flex items-center gap-1 font-medium border p-2 px-4 rounded-full text-sm'>
                   <IconMapPinFilled
                     size={20}
